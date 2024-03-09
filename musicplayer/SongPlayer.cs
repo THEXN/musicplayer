@@ -41,8 +41,6 @@ namespace MusicPlayer
             }
         }
 
-
-
         public void EndSong()
         {
             if (this.currentSong != null)
@@ -50,7 +48,11 @@ namespace MusicPlayer
                 this.currentSong.EndSong();
             }
             this.currentSong = null;
+
+            // 给当前玩家发送消息
+            this.Player.SendInfoMessage("已停止播放");
         }
+
     }
 
 }

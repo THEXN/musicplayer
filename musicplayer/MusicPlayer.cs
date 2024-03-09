@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Policy;
 using MusicPlayer.Music;
 using Terraria;
 using TerrariaApi.Server;
@@ -32,8 +33,8 @@ namespace MusicPlayer
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command("", PlaySong, "song"));
-            Commands.ChatCommands.Add(new Command("", PlaySongAll, "song2"));
+            Commands.ChatCommands.Add(new Command("song", PlaySong, "song"));
+            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2"));
 
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
@@ -63,7 +64,11 @@ namespace MusicPlayer
         private void OnLeave(LeaveEventArgs args)
         {
             int who = args.Who;
-            this.songPlayers[who] = null; // 移除对应的 SongPlayer 对象
+            if (this.songPlayers[who] != null)
+            {
+                this.songPlayers[who].EndSong(); // 停止之前的音乐播放
+                this.songPlayers[who] = null; // 移除对应的 SongPlayer 对象
+            }
         }
 
 
@@ -100,10 +105,12 @@ namespace MusicPlayer
                     {
                         Song s = new Song(this, songName, filePath, this.songPlayers[args.Player.Index]);
                         this.songPlayers[args.Player.Index].StartSong(s);
+                        args.Player.SendInfoMessage("正在播放: {0}", songName); // 添加这条消息来提示正在播放
                     }
                 }
             }
         }
+
 
         public void PlaySongAll(CommandArgs args)
         {
@@ -147,10 +154,18 @@ namespace MusicPlayer
                             songPlayer.StartSong(s);
                         }
                     }
+
+                    // 给所有玩家发送消息
+                    foreach (TSPlayer player in TShock.Players)
+                    {
+                        if (player != null && player.Active)
+                        {
+                            player.SendInfoMessage("正在给您播放: {0}，使用/song停止播放", songName);
+                        }
+                    }
                 }
             }
         }
-
 
 
 
