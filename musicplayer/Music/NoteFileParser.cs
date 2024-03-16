@@ -44,7 +44,8 @@ namespace MusicPlayer.Music
                                     }
                                     catch (ArgumentException ex)
                                     {
-                                        TShock.Log.ConsoleError("错误的读取: {0}", noteNameText);
+                                        Console.Error.WriteLine("错误的读取: {0}", noteNameText);
+
                                     }
                                 }
                             }
