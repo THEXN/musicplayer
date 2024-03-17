@@ -73,7 +73,7 @@ namespace MusicPlayer.Music
         }
         private void PlayNote(float note)
         {
-            this.Player.SendData((PacketTypes)58, "", this.Player.Index, note, 0f, 0f, 0); // 修改为 this.Player
+            this.Player.SendData(PacketTypes.PlayHarp, "", this.Player.Index, note, 0f, 0f, 0); // 修改为 this.Player
         }
         private List<List<Note>> notesToPlay = new List<List<Note>>();
         private SongPlayer player;
