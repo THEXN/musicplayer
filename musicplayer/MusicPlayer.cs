@@ -34,16 +34,8 @@ namespace MusicPlayer
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command("song", PlaySong, "song")
-            {
-                HelpText = "返回最后一次死亡的位置",
-                AllowServer = false
-            });
-            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2")
-            {
-                HelpText = "返回最后一次死亡的位置",
-                AllowServer = false
-            });
+            Commands.ChatCommands.Add(new Command("song", PlaySong, "song"));
+            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2"));
 
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
@@ -96,7 +88,7 @@ namespace MusicPlayer
         {
             if (!args.Player.RealPlayer)
             {
-                args.Player.SendInfoMessage("此命令要求在游戏内使用");
+                args.Player.SendErrorMessage("此命令要求在游戏内使用");
                 return;
             }
             var songPlayer = SongPlayers[args.Player.Index];
