@@ -33,8 +33,16 @@ namespace MusicPlayer
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command("song", PlaySong, "song"));
-            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2"));
+            Commands.ChatCommands.Add(new Command("song", PlaySong, "song")
+            {
+                HelpText = "返回最后一次死亡的位置",
+                AllowServer = false
+            });
+            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2")
+            {
+                HelpText = "返回最后一次死亡的位置",
+                AllowServer = false
+            });
 
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
