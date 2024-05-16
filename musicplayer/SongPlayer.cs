@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics.CodeAnalysis;
 using MusicPlayer.Music;
 using TShockAPI;
 
@@ -6,53 +6,44 @@ namespace MusicPlayer
 {
     internal class SongPlayer
     {
-        public bool Listening { get; set; }
+        private bool listening;
+        [MemberNotNullWhen(true, nameof(currentSong))]
+        public bool Listening { get => listening; }
         public TSPlayer Player { get; set; }
-        public Song currentSong = null;
+        public PlaySongInfo? currentSong { get; private set; }
 
         public SongPlayer(TSPlayer ply)
         {
-            this.Player = ply;
-            this.Listening = false;
+            Player = ply;
+            listening = false;
         }
 
-        public void StartSong(Song s)
+        public bool StartSong(PlaySongInfo? playSongInfo = null)
         {
-            if (this.currentSong != null)
+            listening = true;
+            if (playSongInfo is null)
             {
-                this.currentSong.EndSong();
-            }
-            this.currentSong = s;
-
-            // 只为执行命令的玩家设置 Player 属性
-            s.Player = this.Player;
-            s.StartSong();
-        }
-
-        public void StartSongAll(Song s)
-        {
-            foreach (TSPlayer player in TShock.Players)
-            {
-                if (player?.Active ?? false)
+                if(currentSong is null)
                 {
-                    s.Player = player; // 设置当前播放歌曲的玩家
-                    s.StartSong(); // 开始播放歌曲
+                    return false;
                 }
+                currentSong.Play();
+                return true;
             }
+            currentSong = playSongInfo;
+            playSongInfo.Play();
+            return true;
         }
 
-        public void EndSong()
+        public bool EndSong()
         {
-            if (this.currentSong != null)
+            listening = false;
+            if(currentSong is null)
             {
-                this.currentSong.EndSong();
+                return false;
             }
-            this.currentSong = null;
-
-            // 给当前玩家发送消息
-            this.Player.SendInfoMessage("已停止播放");
+            currentSong.Stop();
+            return true;
         }
-
     }
-
 }
