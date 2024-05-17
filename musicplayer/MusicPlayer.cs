@@ -199,7 +199,7 @@ namespace MusicPlayer
                 fileListMessage.Append(Path.GetFileName(file)).AppendLine();
             }
 
-            args.Player.SendSuccessMessage(fileListMessage.ToString());
+            args.Player.SendMessage(fileListMessage.ToString(),Microsoft.Xna.Framework.Color.Yellow);
         }
     }
 }
