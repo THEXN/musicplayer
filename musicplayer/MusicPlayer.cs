@@ -1,6 +1,7 @@
 ﻿using MusicPlayer.Music;
 using System.Text;
 using Terraria;
+using Terraria.ID;
 using TerrariaApi.Server;
 using TShockAPI;
 
@@ -21,7 +22,7 @@ namespace MusicPlayer
 
         internal static SongPlayer?[] SongPlayers = new SongPlayer[255];
 
-        private bool songPlayersIsAllNull;
+        private static bool isNoOneListening;
 
         public MusicPlayer(Main game) : base(game)
         {
@@ -58,17 +59,20 @@ namespace MusicPlayer
         {
             int who = args.Who;
             SongPlayers[who] = new SongPlayer(TShock.Players[who]); // 创建新的 SongPlayer 对象
-            songPlayersIsAllNull = false;
         }
 
         private void OnLeave(LeaveEventArgs args)
         {
             SongPlayers[args.Who] = null; // 移除对应的 SongPlayer 对象
-            songPlayersIsAllNull = Array.TrueForAll(SongPlayers, x => x is null);
+            ListeningCheck();
         }
-        public void OnUpdate(EventArgs args)
+        public static void ListeningCheck()
         {
-            if (songPlayersIsAllNull)
+            isNoOneListening = Array.TrueForAll(SongPlayers, x => x is null || !x.Listening);
+        }
+        public static void OnUpdate(EventArgs args)
+        {
+            if (isNoOneListening)
             {
                 return;
             }
@@ -83,7 +87,7 @@ namespace MusicPlayer
                 {
                     continue;
                 }
-                songPlayer.currentSong.Update(i);
+                songPlayer.CurrentSong.Update(i);
             }
         }
         public void PlaySong(CommandArgs args)
@@ -121,7 +125,10 @@ namespace MusicPlayer
                 if (File.Exists(filePath))
                 {
                     var notes = NoteFileParser.Read(filePath, out var tempo);
-                    songPlayer.StartSong(new PlaySongInfo(notes, tempo));
+                    isNoOneListening = false;
+                    var performer = VirtualPerformer.GetPerformer(args.Parameters.ElementAtOrDefault(1));
+                    performer.Create(songPlayer.Player.Index);
+                    songPlayer.StartSong(new PlaySongInfo(notes, tempo, performer));
                     args.Player.SendInfoMessage("正在播放: {0}", songName); // 添加这条消息来提示正在播放
                 }
                 else
@@ -142,12 +149,15 @@ namespace MusicPlayer
                 if (File.Exists(filePath))
                 {
                     var notes = NoteFileParser.Read(filePath, out var tempo);
+                    isNoOneListening = false;
                     for (int i = 0; i < SongPlayers.Length; i++)
                     {
                         var songPlayer = SongPlayers[i];
                         if (songPlayer is not null)
                         {
-                            songPlayer.StartSong(new PlaySongInfo(notes, tempo));
+                            var performer = VirtualPerformer.GetPerformer(args.Parameters.ElementAtOrDefault(1));
+                            performer.Create(i);
+                            songPlayer.StartSong(new PlaySongInfo(notes, tempo, performer));
                             if (TShock.Players[i].Active)
                             {
                                 TShock.Players[i].SendInfoMessage("正在给您播放: {0}，使用/song停止播放", songName);

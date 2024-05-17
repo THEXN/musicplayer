@@ -7,10 +7,10 @@ namespace MusicPlayer
     internal class SongPlayer
     {
         private bool listening;
-        [MemberNotNullWhen(true, nameof(currentSong))]
+        [MemberNotNullWhen(true, nameof(CurrentSong))]
         public bool Listening { get => listening; }
         public TSPlayer Player { get; set; }
-        public PlaySongInfo? currentSong { get; private set; }
+        public PlaySongInfo? CurrentSong { get; private set; }
 
         public SongPlayer(TSPlayer ply)
         {
@@ -23,14 +23,14 @@ namespace MusicPlayer
             listening = true;
             if (playSongInfo is null)
             {
-                if(currentSong is null)
+                if(CurrentSong is null)
                 {
                     return false;
                 }
-                currentSong.Play();
+                CurrentSong.Play();
                 return true;
             }
-            currentSong = playSongInfo;
+            CurrentSong = playSongInfo;
             playSongInfo.Play();
             return true;
         }
@@ -38,11 +38,12 @@ namespace MusicPlayer
         public bool EndSong()
         {
             listening = false;
-            if(currentSong is null)
+            if(CurrentSong is null)
             {
                 return false;
             }
-            currentSong.Stop();
+            CurrentSong.Stop();
+            MusicPlayer.ListeningCheck();
             return true;
         }
     }

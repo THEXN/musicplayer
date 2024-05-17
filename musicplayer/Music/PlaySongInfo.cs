@@ -8,13 +8,15 @@ namespace MusicPlayer.Music
         public int Tempo;
         private bool playCompleted;
         public bool PlayCompleted { get => playCompleted; }
+        public VirtualPerformer Performer { get; private set; }
         private int delta;
         private DateTime lastUpdate;
         private int noteIndex;
-        public PlaySongInfo(List<List<float>> notes, int tempo)
+        public PlaySongInfo(List<List<float>> notes, int tempo, VirtualPerformer performer)
         {
             Notes = notes;
             Tempo = tempo;
+            Performer = performer;
         }
         public void Update(int index)
         {
@@ -25,7 +27,7 @@ namespace MusicPlayer.Music
             if(noteIndex == Notes.Count)
             {
                 playCompleted = true;
-                var songPlayer = MusicPlayer.SongPlayers[noteIndex];
+                var songPlayer = MusicPlayer.SongPlayers[index];
                 if(songPlayer is not null)
                 {
                     songPlayer.EndSong();
@@ -40,7 +42,8 @@ namespace MusicPlayer.Music
                 {
                     if (noteValue >= -1f && noteValue <= 1f)
                     {
-                        PlayNote(index, noteValue);
+                        //PlayNote(index, noteValue);
+                        Performer.PlayNote(index, noteValue);
                     }
                 }
                 delta -= Tempo;
