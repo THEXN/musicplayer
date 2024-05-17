@@ -1,4 +1,5 @@
 ﻿using MusicPlayer.Music;
+using System.Security.Policy;
 using System.Text;
 using Terraria;
 using Terraria.ID;
@@ -24,6 +25,8 @@ namespace MusicPlayer
 
         private static bool isNoOneListening;
 
+        private Command[] commands;
+
         public MusicPlayer(Main game) : base(game)
         {
             songPath = Path.Combine(TShock.SavePath, "Songs");
@@ -32,13 +35,19 @@ namespace MusicPlayer
             {
                 Directory.CreateDirectory(songPath);
             }
+
+            commands = new Command[]
+            {
+        new Command("song", PlaySong, "song"),
+        new Command("song2", PlaySongAll, "song2"),
+        new Command("songlist", ListFiles, "songlist")
+            };
         }
 
         public override void Initialize()
         {
-            Commands.ChatCommands.Add(new Command("song", PlaySong, "song"));
-            Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2"));
-            Commands.ChatCommands.Add(new Command("songlist", ListFiles, "songlist"));
+            Array.ForEach(commands, command => Commands.ChatCommands.Add(command));
+
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
@@ -48,12 +57,15 @@ namespace MusicPlayer
         {
             if (disposing)
             {
+                Array.ForEach(commands, command => Commands.ChatCommands.Remove(command));
+
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnJoin);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
                 ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
             }
             base.Dispose(disposing);
         }
+
 
         private void OnJoin(GreetPlayerEventArgs args)
         {
@@ -102,14 +114,15 @@ namespace MusicPlayer
             {
                 return;
             }
-            const string invalidUsageMessage = "方式: /song \"歌曲名称\"";
-            const string stopPlaybackMessage = "使用 /song ,来停止播放.";
+            const string invalidUsageMessage = "方式: /song <歌曲名称> [演奏乐器]\n演奏乐器: harp, theaxe, bell，默认为 harp";
+            const string stopPlaybackMessage = "使用 /song 来停止播放.";
 
             if (args.Parameters.Count == 0)
             {
                 if (songPlayer.Listening)
                 {
                     songPlayer.EndSong();
+                    TShock.Players[songPlayer.Player.Index].SendInfoMessage("已经为你停止播放");
                 }
                 else
                 {
@@ -178,8 +191,10 @@ namespace MusicPlayer
                     if (songPlayer != null && songPlayer.Listening)
                     {
                         songPlayer.EndSong();
+                        TShock.Players[songPlayer.Player.Index].SendInfoMessage("已经为你停止播放");
                     }
                 }
+                args.Player.SendInfoMessage("已经为所有玩家停止播放");
             }
         }
 
