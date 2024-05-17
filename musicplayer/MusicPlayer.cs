@@ -1,4 +1,5 @@
 ﻿using MusicPlayer.Music;
+using System.Text;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -36,7 +37,7 @@ namespace MusicPlayer
         {
             Commands.ChatCommands.Add(new Command("song", PlaySong, "song"));
             Commands.ChatCommands.Add(new Command("song2", PlaySongAll, "song2"));
-
+            Commands.ChatCommands.Add(new Command("songlist", ListFiles, "songlist"));
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
             ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
@@ -57,6 +58,7 @@ namespace MusicPlayer
         {
             int who = args.Who;
             SongPlayers[who] = new SongPlayer(TShock.Players[who]); // 创建新的 SongPlayer 对象
+            songPlayersIsAllNull = false;
         }
 
         private void OnLeave(LeaveEventArgs args)
@@ -170,5 +172,34 @@ namespace MusicPlayer
                 }
             }
         }
-	}
+
+
+        private void ListFiles(CommandArgs args)
+        {
+            string targetFolder = Path.Combine(TShock.SavePath, "Songs");
+            if (!Directory.Exists(targetFolder))
+            {
+                args.Player.SendErrorMessage("目录不存在: {0}", targetFolder);
+                return;
+            }
+
+            string[] files = Directory.GetFiles(targetFolder);
+
+            // 如果没有文件
+            if (files.Length == 0)
+            {
+                args.Player.SendSuccessMessage("没有任何歌曲: {0}", targetFolder);
+                return;
+            }
+
+            // 发送文件列表到聊天
+            StringBuilder fileListMessage = new StringBuilder($"本服务器有以下歌曲:\n");
+            foreach (string file in files)
+            {
+                fileListMessage.Append(Path.GetFileName(file)).AppendLine();
+            }
+
+            args.Player.SendSuccessMessage(fileListMessage.ToString());
+        }
+    }
 }
