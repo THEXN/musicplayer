@@ -1,17 +1,15 @@
-﻿using MusicPlayer.Music;
-using System.Security.Policy;
-using System.Text;
+﻿using System.Text;
+using MusicPlayer.Music;
 using Terraria;
-using Terraria.ID;
 using TerrariaApi.Server;
 using TShockAPI;
 
 namespace MusicPlayer
 {
     [ApiVersion(2, 1)]
-	public class MusicPlayer : TerrariaPlugin
-	{
-        public override string Author => "Cjx适配，肝帝熙恩修改";
+    public class MusicPlayer : TerrariaPlugin
+    {
+        public override string Author => "Cjx适配，肝帝熙恩修改, yu大改";
 
         public override string Description => "一个简单的音乐播放插件.";
 
@@ -25,7 +23,7 @@ namespace MusicPlayer
 
         private static bool isNoOneListening;
 
-        private Command[] commands;
+        private Command[] addCommands;
 
         public MusicPlayer(Main game) : base(game)
         {
@@ -36,17 +34,17 @@ namespace MusicPlayer
                 Directory.CreateDirectory(songPath);
             }
 
-            commands = new Command[]
+            addCommands = new Command[]
             {
-        new Command("song", PlaySong, "song"),
-        new Command("song2", PlaySongAll, "song2"),
-        new Command("songlist", ListFiles, "songlist")
+                new ("song", PlaySong, "song"),
+                new ("song2", PlaySongAll, "song2"),
+                new ("songlist", ListFiles, "songlist")
             };
         }
 
         public override void Initialize()
         {
-            Array.ForEach(commands, command => Commands.ChatCommands.Add(command));
+            Array.ForEach(addCommands, command => Commands.ChatCommands.Add(command));
 
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnJoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnLeave);
@@ -57,7 +55,7 @@ namespace MusicPlayer
         {
             if (disposing)
             {
-                Array.ForEach(commands, command => Commands.ChatCommands.Remove(command));
+                Array.ForEach(addCommands, command => Commands.ChatCommands.Remove(command));
 
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnJoin);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
@@ -88,7 +86,7 @@ namespace MusicPlayer
             {
                 return;
             }
-            for(int i = 0; i < 255; i++)
+            for (int i = 0; i < 255; i++)
             {
                 if (SongPlayers[i] is null)
                 {
@@ -224,7 +222,7 @@ namespace MusicPlayer
                 fileListMessage.Append(Path.GetFileName(file)).AppendLine();
             }
 
-            args.Player.SendMessage(fileListMessage.ToString(),Microsoft.Xna.Framework.Color.Yellow);
+            args.Player.SendMessage(fileListMessage.ToString(), Microsoft.Xna.Framework.Color.Yellow);
         }
     }
 }

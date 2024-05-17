@@ -23,7 +23,7 @@ namespace MusicPlayer
             listening = true;
             if (playSongInfo is null)
             {
-                if(CurrentSong is null)
+                if (CurrentSong is null)
                 {
                     return false;
                 }
@@ -38,7 +38,7 @@ namespace MusicPlayer
         public bool EndSong()
         {
             listening = false;
-            if(CurrentSong is null)
+            if (CurrentSong is null)
             {
                 return false;
             }
