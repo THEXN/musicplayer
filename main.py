@@ -109,6 +109,7 @@ output_path = 'C:\\Users\\xien\\Desktop\\ts\\tshock\\Songs\\2：23AM..txt'  # �
 
 # 调用函数
 write_notes_to_file(midi_path, output_path, short_interval=0.1, long_interval=0.3)
+# short_interval表示较短的时间间隔，小于这个值就将两个音符放在同一排，long_interval表示较长的时间间隔，大于这个值就将两个音符之间加0
 
 
 
