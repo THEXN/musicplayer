@@ -11,13 +11,13 @@ namespace MusicPlayer
     [ApiVersion(2, 1)]
 	public class MusicPlayer : TerrariaPlugin
 	{
-        public override string Author => "Cjx适配，肝帝熙恩修改";
+        public override string Author => "Cjx适配，肝帝熙恩，西江";
 
         public override string Description => "一个简单的音乐播放插件.";
 
         public override string Name => "音乐播放器";
 
-        public override Version Version => new Version(1, 0, 0, 1);
+        public override Version Version => new Version(1, 0, 2);
 
         public string songPath;
 
