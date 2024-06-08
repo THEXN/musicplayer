@@ -15,7 +15,7 @@ namespace MusicPlayer
 
         public override string Name => "音乐播放器";
 
-        public override Version Version => new Version(1, 0, 0, 1);
+        public override Version Version => new Version(1, 0, 2);
 
         public string songPath;
 
