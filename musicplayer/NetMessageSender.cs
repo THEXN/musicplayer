@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using System;
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -62,7 +63,7 @@ internal static class NetMessageSender
         data[3] = index;
         var offset = 4;
         var count = Math.Min(Player.maxBuffs, buffTypes.Length);
-        for (int i = 0; i < count; i++)
+        for(int i = 0; i < count; i++)
         {
             BinaryPrimitives.WriteUInt16LittleEndian(dataSpan[offset..], buffTypes[i]);
             offset += sizeof(ushort);
