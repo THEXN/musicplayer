@@ -24,11 +24,11 @@ namespace MusicPlayer.Music
             {
                 return;
             }
-            if(noteIndex == Notes.Count)
+            if (noteIndex == Notes.Count)
             {
                 playCompleted = true;
                 var songPlayer = MusicPlayer.SongPlayers[index];
-                if(songPlayer is not null)
+                if (songPlayer is not null)
                 {
                     songPlayer.EndSong();
                 }

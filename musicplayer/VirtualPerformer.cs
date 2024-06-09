@@ -43,6 +43,6 @@ internal class VirtualPerformer
     public void PlayNote(int remoteClient, float note)
     {
         NetMessageSender.PlayerControls(remoteClient, Index, Main.player[remoteClient].position);
-        NetMessageSender.InstrumentSound(remoteClient,Index, note);
+        NetMessageSender.InstrumentSound(remoteClient, Index, note);
     }
 }
